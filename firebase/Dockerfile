@@ -1,16 +1,10 @@
-FROM node:lts-alpine3.14 AS app-env
-
-# Install Python and Java and pre-cache emulator dependencies.
-RUN apk add --no-cache python3 py3-pip openjdk11-jre bash && \
-    npm install -g firebase-tools && \
-    firebase setup:emulators:database && \
-    firebase setup:emulators:firestore && \
-    firebase setup:emulators:pubsub && \
-    firebase setup:emulators:storage && \
-    firebase setup:emulators:ui && \
-    rm -rf /var/cache/apk/*
-
+FROM node
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install dos2unix
+RUN echo "Installing firebase tools ..."
+RUN npm i -g firebase-tools
 ADD firebase.bash /usr/bin
 RUN chmod +x /usr/bin/firebase.bash
-
+RUN dos2unix /usr/bin/firebase.bash
 ENTRYPOINT [ "/usr/bin/firebase.bash" ]
